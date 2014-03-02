@@ -1,0 +1,13 @@
+% Reading the original image and turn it into a binary image using
+% thresholding
+
+im = imread('test.jpg');
+figure(1);
+imshow(im);
+
+h = imhist(im);
+figure(2);
+plot(h);
+title('Intensity Histogram');
+
+% Get the binary

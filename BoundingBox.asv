@@ -1,0 +1,7 @@
+% BoundingBox.m
+% It returns the boundingbox of each
+Nc = max(max(L));
+figure;
+imagesc(L);
+hold on;
+for i=1:Nc
