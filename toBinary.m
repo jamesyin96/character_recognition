@@ -3,7 +3,7 @@
 function im_out=toBinary(im)
 h = imhist(im);
 %figure(2);
-%plot(h);
+%plot(h(1:255));
 %title('Intensity Histogram');
 
 % Get the binary image from the gray scale image

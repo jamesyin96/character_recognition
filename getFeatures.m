@@ -118,13 +118,53 @@ figure();
 imagesc(conf);
 title('Confusion Matrix');
 
+% Compute the recognition rate of each training image
+T = length(regclass);
+classrate = zeros(T);
+classresult = zeros(T);
+for i=1:T
+    if (regclass(i)==tCounter(i))
+        classrate(i)=1;
+    else
+        classrate(i)=0;
+
+
+% The following is about the processing of testing image
 % Now compute the features of test image
-%testIm = imread('test.jpg');
-%testFeatures = ReadBinarizeExtractFeatures(testIm,0);
-%testLength = length(testFeatures);
+testIm = imread('test.jpg');
+% get the binary image of the test image
+testIm2 = toBinary(testIm);
+
+% find out the size of test image and the h to partition each character
+tsize = size(testIm2);
+height = tsize(1);
+h = height/10;
+testCounter = zeros(70,1);
+% Find connnected components
+for i=1:10
+    temp =testIm2((i-1)*h+1:i*h,:);
+    testFeatures((i-1)*7+1:i*7,:) = ReadBinarizeExtractFeatures(temp,0);
+    testCounter((i-1)*7+1:i*7) = i;
+end
 
 % Normalize the test features with means and var from the training set
-%testFeatures = zeros(testLength,6);
-%for i=1:6
-%testFeatures(:,i)= (testFeatures(:,i) - meanFeatures(i))/sqrt(varFeatures(i));
-%end
+normaltestFeatures = zeros(70,6);
+for i=1:6
+normaltestFeatures(:,i)= (testFeatures(:,i) - meanFeatures(i))/sqrt(varFeatures(i));
+end
+
+
+% Now we compare the testing image features with training image
+
+% Find the distance between each character in testing image and each
+% character in training image
+D2 = dist2(normaltestFeatures,Features);
+% find the closest match, the first column of D2_index shows the closest
+% match, for example, D2_index(2,1) is the index in training set that 
+% matches closest to the 2nd element of the testing set. 
+% So tCounter(D2_index(69,1)) means the num of character that best matches
+% the 69 element in the testing set
+[D2_sorted,D2_index] = sort(D2,2);
+
+% Get the result of recognizing the test set
+result = tCounter(D2_index(:,2));
