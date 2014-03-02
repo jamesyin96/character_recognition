@@ -120,14 +120,23 @@ title('Confusion Matrix');
 
 % Compute the recognition rate of each training image
 T = length(regclass);
-classrate = zeros(T);
-classresult = zeros(T);
+classrate = zeros(10,1);
+classresult = zeros(10,1);
 for i=1:T
     if (regclass(i)==tCounter(i))
-        classrate(i)=1;
-    else
-        classrate(i)=0;
-
+        classresult(tCounter(i))=classresult(tCounter(i))+1;
+    end
+end
+classrate(1)=classresult(1)/aLength;
+classrate(2)=classresult(2)/dLength;
+classrate(3)=classresult(3)/mLength;
+classrate(4)=classresult(4)/nLength;
+classrate(5)=classresult(5)/oLength;
+classrate(6)=classresult(6)/pLength;
+classrate(7)=classresult(7)/qLength;
+classrate(8)=classresult(8)/rLength;
+classrate(9)=classresult(9)/uLength;
+classrate(10)=classresult(10)/wLength;
 
 % The following is about the processing of testing image
 % Now compute the features of test image
@@ -167,4 +176,16 @@ D2 = dist2(normaltestFeatures,Features);
 [D2_sorted,D2_index] = sort(D2,2);
 
 % Get the result of recognizing the test set
-result = tCounter(D2_index(:,2));
+testresult = tCounter(D2_index(:,2));
+
+% Compute the test image recognition rate
+T2 = length(testresult);
+testrate = zeros(10,1);
+result = zeros(10,1);
+for i=1:T2
+    if (testresult(i)==testCounter(i))
+        result(testCounter(i))=result(testCounter(i))+1;
+    end
+end
+
+testrate=result/10;
