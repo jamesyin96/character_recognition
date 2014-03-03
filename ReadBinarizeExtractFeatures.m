@@ -2,7 +2,7 @@
 % the feature matrix of a binary image
 % k = 1, the connected component image will show up
 % k = 0, the connected component image will not show up
-function features = ReadBinarizeExtractFeatures(im2, k)
+function [features,Box] = ReadBinarizeExtractFeatures(im2, k)
 
 % Find connnected components
 L = bwlabel(im2);
@@ -12,5 +12,5 @@ imagesc(L);
 title('Connected Component');
 end
 
-features = BoundingBox(im2, L);
+[features,Box] = BoundingBox(im2, L);
 end

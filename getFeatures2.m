@@ -1,6 +1,7 @@
 % Reading the original image and turn it into a binary image using
 % thresholding
 % processing a
+
 aIm = imread('a.jpg');
 aFeatures = ReadBinarizeExtractFeatures(toBinary(aIm),0);
 aLength = length(aFeatures);
@@ -137,6 +138,8 @@ classrate(7)=classresult(7)/qLength;
 classrate(8)=classresult(8)/rLength;
 classrate(9)=classresult(9)/uLength;
 classrate(10)=classresult(10)/wLength;
+classrate
+total_classrate = sum(classresult)/tLength
 
 % The following is about the processing of testing image
 % Now compute the features of test image
@@ -144,17 +147,8 @@ testIm = imread('test.jpg');
 % get the binary image of the test image
 testIm2 = toBinary(testIm);
 
-% find out the size of test image and the h to partition each character
-tsize = size(testIm2);
-height = tsize(1);
-h = height/10;
-testCounter = zeros(70,1);
-% Find connnected components
-for i=1:10
-    temp =testIm2((i-1)*h+1:i*h,:);
-    testFeatures((i-1)*7+1:i*7,:) = ReadBinarizeExtractFeatures(temp,0);
-    testCounter((i-1)*7+1:i*7) = i;
-end
+% Get the features of testing image
+[testFeatures,Box] = ReadBinarizeExtractFeatures(testIm2, 1);
 
 % Normalize the test features with means and var from the training set
 normaltestFeatures = zeros(70,6);
@@ -168,6 +162,10 @@ end
 % Find the distance between each character in testing image and each
 % character in training image
 D2 = dist2(normaltestFeatures,Features);
+figure();
+imagesc(D2);
+colormap gray
+title('Affinity matrix of test image');
 % find the closest match, the first column of D2_index shows the closest
 % match, for example, D2_index(2,1) is the index in training set that 
 % matches closest to the 2nd element of the testing set. 
@@ -178,14 +176,49 @@ D2 = dist2(normaltestFeatures,Features);
 % Get the result of recognizing the test set
 testresult = tCounter(D2_index(:,1));
 
+% Compute the right class for each component based on the Location and classes
+temp = size(testresult);
+temp1 = temp(1);
+rightclass = zeros(length(testresult),1);
+
+for i=1:temp1
+    rightclass(i)=findClass(Location,classes,Box(i,:));
+end
+
 % Compute the test image recognition rate
 T2 = length(testresult);
 testrate = zeros(10,1);
 result = zeros(10,1);
 for i=1:T2
-    if (testresult(i)==testCounter(i))
-        result(testCounter(i))=result(testCounter(i))+1;
+    if (testresult(i)==rightclass(i))
+        result(rightclass(i))=result(rightclass(i))+1;
     end
 end
+% we can get the total test recognition rate
+total_testrate=sum(result)/temp1
+% now we try to get each character's recognition rate of the test image
+M=classes(T2);
+testcounter=zeros(M,1);
+for i=1:T2
+  for j=1:M
+      if (classes(i)==j)
+          testcounter(j)=testcounter(j)+1;
+          break;
+      end
+  end
+end
 
-testrate=result/10;
+testrate = result./testcounter
+
+figure(14)
+hold on
+for i=1:length(Location)
+    x1=Location(i,2)+20;
+    y1=Location(i,1)-5;
+    text(x1,y1,[num2str(classes(i))],'Color','w');
+    x2=Box(i,4);
+    y2=Box(i,2)+5;
+    text(x2,y2,[num2str(testresult(i))],'Color','y');
+end
+text(0,0,'White point is the correct class label; Yellow point is the recognized class label');
+hold off
