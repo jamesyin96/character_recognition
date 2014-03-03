@@ -40,13 +40,15 @@ uLength = length(uFeatures);
 % processing w
 wIm = imread('w.jpg');
 wFeatures = ReadBinarizeExtractFeatures(toBinary(wIm),0);
-wLength = length(aFeatures);
+wLength = length(wFeatures);
 
 tLength = aLength + dLength + mLength + nLength + oLength + pLength + ... 
 qLength + rLength + uLength + wLength;
 
+featuresize = size(aFeatures);
+Featurewidth = featuresize(2);
 % creating the big matrix to store all the features of the characters
-tFeatures = zeros(tLength, 6);
+tFeatures = zeros(tLength, Featurewidth);
 % creating the counter to store the index of each CC
 tCounter = zeros(tLength, 1);
 
@@ -90,11 +92,12 @@ tFeatures(curr+1:curr + wLength,:) = wFeatures;
 tCounter(curr+1:curr + wLength) = 10;
 curr = curr + wLength;
 
+
 % normalize the features matrix
-meanFeatures = zeros(6,1);
-varFeatures = zeros(6,1);
-Features = zeros(tLength,6);
-for i=1:6
+meanFeatures = zeros(Featurewidth,1);
+varFeatures = zeros(Featurewidth,1);
+Features = zeros(tLength,Featurewidth);
+for i=1:Featurewidth
 meanFeatures(i) = mean(tFeatures(:,i));
 varFeatures(i) = var(tFeatures(:,i));
 Features(:,i)= (tFeatures(:,i) - meanFeatures(i))/sqrt(varFeatures(i));
@@ -152,8 +155,8 @@ testIm2 = toBinary(testIm);
 [testFeatures,Box] = ReadBinarizeExtractFeatures(testIm2, 1);
 
 % Normalize the test features with means and var from the training set
-normaltestFeatures = zeros(70,6);
-for i=1:6
+normaltestFeatures = zeros(70,Featurewidth);
+for i=1:Featurewidth
 normaltestFeatures(:,i)= (testFeatures(:,i) - meanFeatures(i))/sqrt(varFeatures(i));
 end
 
@@ -162,7 +165,7 @@ end
 
 % Find the distance between each character in testing image and each
 % character in training image
-D2 = dist2(normaltestFeatures,Features)
+D2 = dist2(normaltestFeatures,Features);
 figure();
 imagesc(D2);
 colormap gray

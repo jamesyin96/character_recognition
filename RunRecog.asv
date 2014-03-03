@@ -1,7 +1,7 @@
 % Reading the original image and turn it into a binary image using
 % thresholding
 % processing a
-
+function [total_classrate,total_testrate] = RunRecog(filename,Location,classes)
 aIm = imread('a.jpg');
 aFeatures = ReadBinarizeExtractFeatures(toBinary(aIm),0);
 aLength = length(aFeatures);
@@ -90,10 +90,12 @@ tFeatures(curr+1:curr + wLength,:) = wFeatures;
 tCounter(curr+1:curr + wLength) = 10;
 curr = curr + wLength;
 
+featuresize = size(tFeatures);
+ = t(2);
 % normalize the features matrix
-meanFeatures = zeros(6,1);
-varFeatures = zeros(6,1);
-Features = zeros(tLength,6);
+meanFeatures = zeros(tt,1);
+varFeatures = zeros(tt,1);
+Features = zeros(tLength,tt);
 for i=1:6
 meanFeatures(i) = mean(tFeatures(:,i));
 varFeatures(i) = var(tFeatures(:,i));
@@ -106,7 +108,8 @@ D = dist2(Features,Features);
 
 figure();
 imagesc(D);
-title('Affinity Matrix');
+colormap gray
+title('Affinity Matrix of training image');
 
 [D_sorted, D_index] = sort(D ,2);
 
@@ -143,7 +146,7 @@ total_classrate = sum(classresult)/tLength
 
 % The following is about the processing of testing image
 % Now compute the features of test image
-testIm = imread('test.jpg');
+testIm = imread(filename);
 % get the binary image of the test image
 testIm2 = toBinary(testIm);
 

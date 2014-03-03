@@ -23,7 +23,7 @@ for i=1:Nc;
         Box(counter,:) = [minr-1,maxr+1,minc-1,maxc+1];
         counter = counter + 1;
         [centroid, theta, roundness, inmo] = moments(Cim, 1);
-        Features = [Features; theta, roundness, inmo];
+        Features = [Features; centroid, theta, roundness, inmo];
         rectangle('Position',[minc, minr, maxc-minc+1, maxr-minr+1], 'EdgeColor','w');
     end
 end
